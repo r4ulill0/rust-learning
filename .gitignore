@@ -1,0 +1,4 @@
+**/target/ # Ignora la carpeta de builds de cargo
+*           # Ignora todos los ficheros
+!*/         # Incluye los directorios raices
+!**/*.rs    # Incluye los archivos de rust
