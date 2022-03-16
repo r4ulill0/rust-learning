@@ -9,12 +9,17 @@ pub struct Configuracion {
 }
 
 impl Configuracion {
-    pub fn new(args: &[String]) -> Result<Configuracion, &'static str> {
-        if args.len() < 3 {
-            return Err("Argumentos insuficientes");
-        }
-        let busqueda = args[1].clone();
-        let archivo = args[2].clone();
+    pub fn new(mut args: env::Args) -> Result<Configuracion, &'static str> {
+        let busqueda = match args.next() {
+            Some(b) => b,
+            None => return Err("No se ha especificado el término de búsqueda"),
+        };
+
+        let archivo = match args.next() {
+            Some(f) => f,
+            None => return Err("No se ha especificado el archivo a analizar"),
+        };
+
         let mayus_sensible = env::var("MAYUS_INSENSIBLE").is_err();
         Ok(Configuracion { busqueda, archivo, mayus_sensible })
     }
@@ -37,28 +42,20 @@ pub fn run(config: Configuracion) -> Result<(), Box<dyn Error>> {
 }
 
 pub fn busca<'a>(busqueda: &str, contenido: &'a str) -> Vec<&'a str> {
-    let mut resultado = vec![];
 
-    for linea in contenido.lines() {
-        if linea.contains(busqueda) {
-            resultado.push(linea);
-        }
-    }
-
-    return resultado;
+    contenido
+        .lines()
+        .filter(|linea| linea.contains(busqueda))
+        .collect()
 }
 
 pub fn busca_insensible<'a>(busqueda: &str, contenido: &'a str) -> Vec<&'a str> {
-    let mut resultado = vec![];
     let busqueda = busqueda.to_lowercase();
 
-    for linea in contenido.lines() {
-        if linea.to_lowercase().contains(&busqueda.to_lowercase()) {
-            resultado.push(linea);
-        }
-    }
-
-    return resultado;
+    contenido
+        .lines()
+        .filter(|linea| linea.to_lowercase().contains(&busqueda))
+        .collect()
 }
 
 #[cfg(test)]
