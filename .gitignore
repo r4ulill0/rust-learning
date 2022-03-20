@@ -4,6 +4,7 @@ debug/
 target/
 !**/*.rs
 !**/Cargo.toml
+!**/*.html
 lock.html
 Cargo.lock
 **/*.rs.bk
